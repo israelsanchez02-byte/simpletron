@@ -1,41 +1,55 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
-// --- CODIGOS DE OPERACION SML ---
-#define READ 10
-#define WRITE 11
+// --- CODIGOS DE OPERACION SML MEJORADOS ---
+// Entrada / Salida
+#define READ        10
+#define WRITE       11
+#define NEWLINE     12
+#define READ_STR    13
+#define WRITE_STR   14
 
-#define LOAD 20
-#define STORE 21
+// Carga / Almacenamiento
+#define LOAD        20
+#define STORE       21
 
-#define ADD 30
-#define SUBTRACT 31
-#define DIVIDE 32
-#define MULTIPLY 33
+// Aritmetica (Soporta enteros y flotantes)
+#define ADD         30
+#define SUBTRACT    31
+#define DIVIDE      32
+#define MULTIPLY    33
+#define MODULUS     34
+#define EXPONENT    35
 
-#define BRANCH 40
-#define BRANCHNEG 41
-#define BRANCHZERO 42
-#define HALT 43
+// Control / Bucle
+#define BRANCH      40
+#define BRANCHNEG   41
+#define BRANCHZERO  42
+#define HALT        43
 
 // --- CONSTANTES DEL SISTEMA ---
-#define MEM_SIZE 100
-#define MIN_VAL -9999
-#define MAX_VAL 9999
+#define MEM_SIZE    1000        // Memoria expandida a 1000 posiciones (0 a 999)
+#define MIN_VAL     -99999      // Rango de palabra extendido para 5 digitos
+#define MAX_VAL     99999
 
 // --- REGISTROS Y MEMORIA ---
-int memory[MEM_SIZE];
-int accumulator = 0;
+// Soporte de punto flotante: Se almacena como 'float' para operar preservando decimales
+float memory[MEM_SIZE];
+float accumulator = 0.0f;
 int instructionCounter = 0;
 int instructionRegister = 0;
 int operationCode = 0;
 int operand = 0;
 
-// Declaración de funciones
+// Prototipos de funciones
 void loadProgram(void);
 void executeProgram(void);
 void dumpMemory(void);
-bool isValidWord(int word);
+bool isValidWord(float word);
+void clearInputBuffer(void);
 
 int main(void) {
     loadProgram();
@@ -43,84 +57,185 @@ int main(void) {
     return 0;
 }
 
-// Función para verificar si la palabra ingresada está en el rango permitido
-bool isValidWord(int word) {
-    return (word >= MIN_VAL && word <= MAX_VAL);
+// Limpia el buffer de teclado en lecturas
+void clearInputBuffer(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
-// Fase 1: Carga del programa en la memoria
+// Valida si la palabra o valor esta dentro del rango permitido
+bool isValidWord(float word) {
+    return (word >= (float)MIN_VAL && word <= (float)MAX_VAL);
+}
+
+// Fase 1: Carga del programa (Desde archivo "programa.simp" o teclado)
 void loadProgram(void) {
-    int instruction = 0;
+    FILE *file = fopen("programa.simp", "r");
     
-    // Inicialización de la memoria en 0
+    // Inicializar toda la memoria en 0.0
     for (int i = 0; i < MEM_SIZE; i++) {
-        memory[i] = 0;
+        memory[i] = 0.0f;
     }
 
-    printf("*** ¡Bienvenido a Simpletron! ***\n");
-    printf("*** Introduzca su programa una instrucción ***\n");
-    printf("*** (o palabra de datos) a la vez en la línea ***\n");
-    printf("*** de texto de entrada. Yo indicaré el número ***\n");
-    printf("*** de posición y una interrogación (?). Usted ***\n");
-    printf("*** tecleará entonces la palabra para esa ***\n");
-    printf("*** posición. Haga clic en el botón LISTO para ***\n");
-    printf("*** dejar de introducir su programa. ***\n\n");
+    printf("*** ¡Bienvenido a Simpletron v2.0! ***\n");
 
-    while (instructionCounter < MEM_SIZE) {
-        printf("%02d ? ", instructionCounter);
-        scanf("%d", &instruction);
+    if (file != NULL) {
+        // MEJORA 1: Carga desde archivo programa.simp
+        printf("*** Cargando programa desde 'programa.simp'... ***\n");
+        float instruction = 0.0f;
+        int lineNum = 0;
 
-        // Centinela de fin de carga
-        if (instruction == 9999) {
-            break;
+        while (fscanf(file, "%f", &instruction) == 1 && instructionCounter < MEM_SIZE) {
+            lineNum++;
+            if ((int)instruction == 99999) { // Centinela 99999 para terminar carga
+                break;
+            }
+
+            if (!isValidWord(instruction)) {
+                printf("*** Error en archivo 'programa.simp' (linea %d): valor fuera de rango. ***\n", lineNum);
+                printf("*** Abortando lectura de archivo. ***\n");
+                fclose(file);
+                exit(1);
+            }
+
+            memory[instructionCounter] = instruction;
+            instructionCounter++;
         }
+        fclose(file);
+        printf("*** Carga desde archivo completada exitosamente (%d instrucciones). ***\n\n", instructionCounter);
 
-        // Validación de datos de entrada
-        if (!isValidWord(instruction)) {
-            printf("*** Palabra inválida (debe estar entre -9999 y +9998). Intente de nuevo. ***\n");
-            continue;
+    } else {
+        // Carga interactiva desde teclado
+        printf("*** Archivo 'programa.simp' no encontrado. Modo Interactivo Activado. ***\n");
+        printf("*** Introduzca su programa una instruccion a la vez. ***\n");
+        printf("*** Ingrese 99999 para terminar la carga. ***\n\n");
+
+        float instruction = 0.0f;
+
+        while (instructionCounter < MEM_SIZE) {
+            printf("%03d ? ", instructionCounter);
+            
+            if (scanf("%f", &instruction) != 1) {
+                printf("*** Entrada invalida. Introduzca un numero numerico. ***\n");
+                clearInputBuffer();
+                continue;
+            }
+
+            if ((int)instruction == 99999) {
+                break;
+            }
+
+            if (!isValidWord(instruction)) {
+                printf("*** Palabra invalida (debe estar entre %d y +%d). ***\n", MIN_VAL, MAX_VAL);
+                continue;
+            }
+
+            memory[instructionCounter] = instruction;
+            instructionCounter++;
         }
-
-        memory[instructionCounter] = instruction;
-        instructionCounter++;
+        printf("\n*** Se termino de cargar el programa manualmente ***\n");
     }
 
-    printf("\n*** Se terminó de cargar el programa ***\n");
-    printf("*** Comienza la ejecución del programa ***\n\n");
-
-    // Reiniciar contador de instrucciones para iniciar ejecución desde la posición 00
+    printf("*** Comienza la ejecucion del programa ***\n\n");
     instructionCounter = 0;
 }
 
-// Fase 2: Ciclo de Búsqueda, Decodificación y Ejecución
+// Fase 2: Ciclo de Busqueda, Decodificacion y Ejecucion
 void executeProgram(void) {
     bool isRunning = true;
     bool branched = false;
 
     while (isRunning && instructionCounter < MEM_SIZE) {
-        // Fetch (Búsqueda)
-        instructionRegister = memory[instructionCounter];
+        // Fetch
+        instructionRegister = (int)memory[instructionCounter];
 
-        // Decode (Decodificación)
-        operationCode = instructionRegister / 100;
-        operand = instructionRegister % 100;
+        // Decode (Instruccion de 5 digitos: 2 digitos para OpCode, 3 para Operando/Direccion 0-999)
+        int absInstruction = abs(instructionRegister);
+        operationCode = absInstruction / 1000;
+        operand = absInstruction % 1000;
 
         branched = false;
 
-        // Execute (Ejecución)
+        // Execute
         switch (operationCode) {
             case READ:
                 printf("? ");
-                scanf("%d", &memory[operand]);
-                while (!isValidWord(memory[operand])) {
-                    printf("*** Valor fuera de rango (-9999 a +9999). Reingrese: ***\n? ");
-                    scanf("%d", &memory[operand]);
+                while (scanf("%f", &memory[operand]) != 1 || !isValidWord(memory[operand])) {
+                    printf("*** Valor fuera de rango (%d a +%d). Reingrese: ***\n? ", MIN_VAL, MAX_VAL);
+                    clearInputBuffer();
                 }
                 break;
 
             case WRITE:
-                printf("Salida Simpletron: %+05d\n", memory[operand]);
+                // Si el valor es entero puro se imprime sin decimales, si no como float
+                if (memory[operand] == (int)memory[operand]) {
+                    printf("Salida Simpletron: %+06d\n", (int)memory[operand]);
+                } else {
+                    printf("Salida Simpletron: %+08.2f\n", memory[operand]);
+                }
                 break;
+
+            case NEWLINE: // MEJORA 5: Imprimir salto de linea
+                printf("\n");
+                break;
+
+            case READ_STR: { // MEJORA 6: Entrada de cadenas en formato [ Longitud | ASCII 3d ]
+                char strBuffer[256];
+                printf("Ingrese cadena: ");
+                clearInputBuffer();
+                if (fgets(strBuffer, sizeof(strBuffer), stdin) != NULL) {
+                    // Quitar salto de linea sobrante
+                    strBuffer[strcspn(strBuffer, "\r\n")] = '\0';
+                }
+
+                int len = strlen(strBuffer);
+                int baseAddr = operand;
+
+                if (baseAddr + len >= MEM_SIZE) {
+                    printf("*** Error: La cadena excede el limite de memoria ***\n");
+                    dumpMemory();
+                    return;
+                }
+
+                // Posicion base: almacena la longitud (ejemplo: 05000 para len 5)
+                memory[baseAddr] = (float)(len * 1000);
+
+                // Posiciones subsecuentes: [ Indice_1d | ASCII_3d ] (ej. 01077 para 'M')
+                for (int i = 0; i < len; i++) {
+                    int posIdx = i + 1;
+                    int asciiVal = (unsigned char)strBuffer[i];
+                    int packedVal = (posIdx * 1000) + asciiVal;
+                    memory[baseAddr + 1 + i] = (float)packedVal;
+                }
+                break;
+            }
+
+            case WRITE_STR: { // MEJORA 7: Salida de cadenas procesando memoria
+                int baseAddr = operand;
+                if (baseAddr < 0 || baseAddr >= MEM_SIZE) {
+                    printf("*** Error: Direccion de memoria invalida para cadena ***\n");
+                    dumpMemory();
+                    return;
+                }
+
+                int headerWord = (int)memory[baseAddr];
+                int len = headerWord / 1000; // Extrae los 2 primeros digitos (longitud)
+
+                if (len < 0 || baseAddr + len >= MEM_SIZE) {
+                    printf("*** Error: Cadena corrupta o fuera de limites ***\n");
+                    dumpMemory();
+                    return;
+                }
+
+                printf("Cadena Simpletron: ");
+                for (int i = 0; i < len; i++) {
+                    int word = (int)memory[baseAddr + 1 + i];
+                    int asciiVal = word % 1000; // Extrae los ultimos 3 digitos (ASCII)
+                    printf("%c", (char)asciiVal);
+                }
+                printf("\n");
+                break;
+            }
 
             case LOAD:
                 accumulator = memory[operand];
@@ -134,7 +249,6 @@ void executeProgram(void) {
                 accumulator += memory[operand];
                 if (!isValidWord(accumulator)) {
                     printf("*** Desbordamiento del acumulador ***\n");
-                    printf("*** La ejecución de Simpletron terminó anormalmente ***\n\n");
                     dumpMemory();
                     return;
                 }
@@ -144,16 +258,14 @@ void executeProgram(void) {
                 accumulator -= memory[operand];
                 if (!isValidWord(accumulator)) {
                     printf("*** Desbordamiento del acumulador ***\n");
-                    printf("*** La ejecución de Simpletron terminó anormalmente ***\n\n");
                     dumpMemory();
                     return;
                 }
                 break;
 
             case DIVIDE:
-                if (memory[operand] == 0) {
+                if (memory[operand] == 0.0f) {
                     printf("*** Intento de dividir entre cero ***\n");
-                    printf("*** La ejecución de Simpletron terminó anormalmente ***\n\n");
                     dumpMemory();
                     return;
                 }
@@ -164,7 +276,24 @@ void executeProgram(void) {
                 accumulator *= memory[operand];
                 if (!isValidWord(accumulator)) {
                     printf("*** Desbordamiento del acumulador ***\n");
-                    printf("*** La ejecución de Simpletron terminó anormalmente ***\n\n");
+                    dumpMemory();
+                    return;
+                }
+                break;
+
+            case MODULUS: // MEJORA 3: Operacion residuo/modulo
+                if ((int)memory[operand] == 0) {
+                    printf("*** Intento de division/modulo entre cero ***\n");
+                    dumpMemory();
+                    return;
+                }
+                accumulator = (float)((int)accumulator % (int)memory[operand]);
+                break;
+
+            case EXPONENT: // MEJORA 4: Exponenciacion A^B
+                accumulator = powf(accumulator, memory[operand]);
+                if (!isValidWord(accumulator)) {
+                    printf("*** Desbordamiento en exponenciacion ***\n");
                     dumpMemory();
                     return;
                 }
@@ -176,56 +305,67 @@ void executeProgram(void) {
                 break;
 
             case BRANCHNEG:
-                if (accumulator < 0) {
+                if (accumulator < 0.0f) {
                     instructionCounter = operand;
                     branched = true;
                 }
                 break;
 
             case BRANCHZERO:
-                if (accumulator == 0) {
+                if (accumulator == 0.0f) {
                     instructionCounter = operand;
                     branched = true;
                 }
                 break;
 
             case HALT:
-                printf("*** Terminó la ejecución de Simpletron ***\n\n");
+                printf("*** Termino la ejecucion de Simpletron ***\n\n");
                 isRunning = false;
                 dumpMemory();
                 return;
 
             default:
-                printf("*** Código de operación no válido (%02d) ***\n", operationCode);
-                printf("*** La ejecución de Simpletron terminó anormalmente ***\n\n");
+                printf("*** Codigo de operacion no valido (%02d) ***\n", operationCode);
                 dumpMemory();
                 return;
         }
 
-        // Si no hubo bifurcación, se incrementa al siguiente elemento
         if (!branched) {
             instructionCounter++;
         }
     }
 }
 
-// Fase 3: Vaciado de Memoria (Memory Dump)
+// Fase 3: Vaciado de Memoria (Dump adaptado a 1000 posiciones)
 void dumpMemory(void) {
-    printf("Registros:\n");
-    printf("acumulador:          %+05d\n", accumulator);
-    printf("instructionCounter:     %02d\n", instructionCounter);
-    printf("instructionRegister: %+05d\n", instructionRegister);
-    printf("operationcode:          %02d\n", operationCode);
-    printf("operand:                %02d\n\n", operand);
+    printf("\nREGISTROS:\n");
+    printf("acumulador:          %+08.2f\n", accumulator);
+    printf("instructionCounter:     %03d\n", instructionCounter);
+    printf("instructionRegister: %+06d\n", instructionRegister);
+    printf("operationCode:          %02d\n", operationCode);
+    printf("operand:               %03d\n\n", operand);
 
-    printf("MEMORIA:\n");
-    printf("%8d%6d%6d%6d%6d%6d%6d%6d%6d%6d\n", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+    printf("MEMORIA (Muestra primeros 100 bloques y celdas activas):\n");
+    printf("%8d%8d%8d%8d%8d%8d%8d%8d%8d%8d\n", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-    for (int row = 0; row < 10; row++) {
-        printf("%2d ", row * 10);
+    // Muestra las primeras filas y celdas modificadas/usadas para no saturar pantalla
+    for (int row = 0; row < MEM_SIZE / 10; row++) {
+        bool hasData = false;
         for (int col = 0; col < 10; col++) {
-            printf("%+05d ", memory[row * 10 + col]);
+            if (memory[row * 10 + col] != 0.0f) {
+                hasData = true;
+                break;
+            }
         }
-        printf("\n");
+
+        // Imprime solo filas dentro del rango base (0-90) o las que contengan datos
+        if (row < 10 || hasData || row == (instructionCounter / 10)) {
+            printf("%03d ", row * 10);
+            for (int col = 0; col < 10; col++) {
+                printf("%+06d ", (int)memory[row * 10 + col]);
+            }
+            printf("\n");
+        }
     }
+    printf("\n");
 }
