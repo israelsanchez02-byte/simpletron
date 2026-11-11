@@ -26,6 +26,15 @@ El evaluador utiliza el algoritmo Shunting Yard para convertir expresiones infij
 
 Después utiliza una pila para evaluar el resultado, respetando la precedencia y asociatividad de los operadores. También valida los agrupadores, los operadores y los errores durante la evaluación.
 
+
+### Integración con el compilador
+
+El archivo `expresiones.h` declara la función `convertirPostfija()`, que permite reutilizar el algoritmo Shunting Yard desde otros módulos.
+
+El compilador incluye este encabezado y utiliza la misma función para convertir las expresiones del lenguaje Simple a notación postfija. De esta manera, se evita duplicar el algoritmo de conversión.
+
+El evaluador conserva su funcionamiento independiente. Al compilar el proyecto con la macro `EXPRESIONES_LIB`, se excluye únicamente su función `main()` para permitir que el compilador utilice sus funciones.
+
 ## 4. Compilador de Simple a SML
 
 El compilador realiza dos pasadas:

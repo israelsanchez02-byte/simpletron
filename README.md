@@ -89,7 +89,7 @@ Desde la carpeta principal del proyecto:
 ```bash
 gcc simpletron.c -o simpletron.exe -lm
 gcc src/expresiones/expresiones.c -o src/expresiones/evaluador.exe -lm
-gcc src/compilador/compilador.c -o src/compilador/compilador.exe
+gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o src/compilador/compilador.exe -lm
 ```
 
 ## 4. Ejecución
@@ -122,6 +122,62 @@ Para ejecutar el SML generado:
 
 También se puede ejecutar otro programa cambiando la ruta del archivo SML.
 
+
+
+
+## Ejemplo completo: programa Simple a SML
+
+Archivo de entrada: `programas/simple/prueba_compilador.simple`
+
+```text
+10 rem prueba del compilador
+20 input a
+30 let b = a * 2
+40 if b >= 10 goto 70
+50 print b
+60 goto 80
+70 print b + 1
+80 end
+```
+
+Compilar el programa:
+
+```bash
+./src/compilador/compilador.exe programas/simple/prueba_compilador.simple
+```
+
+Resultado de la compilación:
+
+```text
+Compilacion correcta.
+Lineas fuente: 8
+Instrucciones SML: 17
+Celdas de datos: 31
+Memoria utilizada: 48 / 1000
+Archivo generado: programas/sml/prueba_compilador.sml
+```
+
+Ejecutar el archivo SML:
+
+```bash
+./simpletron.exe programas/sml/prueba_compilador.sml
+```
+
+Resultados obtenidos:
+
+| Entrada | Salida |
+|---|---|
+| 5 | +11 |
+| 3 | +6 |
+
+El programa demuestra la lectura de datos, asignación, multiplicación, evaluación de condiciones y saltos.
+
+
+
+
+
+
+
 ## 5. Organización de carpetas
 
 ```text
@@ -135,6 +191,7 @@ simpletron/
 │   │   └── compilador.c
 │   └── expresiones/
 │       └── expresiones.c
+│       └── expresiones.h
 │
 ├── programas/
 │   ├── simple/
