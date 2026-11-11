@@ -537,6 +537,7 @@ static int compile_expression(const char *expression, int *result_data_id) {
                 case '-': opcode = OP_SUBTRACT; break;
                 case '*': opcode = OP_MULTIPLY; break;
                 case '/': opcode = OP_DIVIDE; break;
+                case '%': opcode = OP_MODULUS; break;
                 case '^': opcode = OP_EXPONENT; break;
                 default:
                     return report_error("operador no reconocido por el compilador");
