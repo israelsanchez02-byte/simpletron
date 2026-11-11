@@ -1,0 +1,22 @@
+PRUEBAS EXITOSAS DEL EVALUADOR DE EXPRESIONES
+
+Caso 1: Precedencia y operandos de varios digitos
+Entrada: (12 + 8) * 3
+Postfija: 12 8 + 3 *
+Resultado esperado: 60
+Resultado obtenido: 60
+Estado: CORRECTO
+
+Caso 2: Asociatividad de potencia
+Entrada: 2 ^ 3 ^ 2
+Postfija: 2 3 2 ^ ^
+Resultado esperado: 512
+Resultado obtenido: 512
+Estado: CORRECTO
+
+Caso 3: Agrupadores anidados
+Entrada: {[12 + 8] * 3} - 6
+Postfija: 12 8 + 3 * 6 -
+Resultado esperado: 54
+Resultado obtenido: 54
+Estado: CORRECTO
