@@ -6,10 +6,10 @@
 #include <math.h>
 #include <errno.h>
 
+#include "expresiones.h"
+
 /* Limites del evaluador */
 #define MAX_EXPR 256
-#define MAX_TOKENS 256
-#define MAX_TOKEN_LENGTH 64
 #define MAX_DEPTH 100
 
 /* Determina la precedencia de los operadores */
@@ -63,6 +63,10 @@ int esAsociativoDerecha(char op) {
 /*
     Convierte una expresion infija a postfija
     utilizando el algoritmo Shunting Yard.
+
+    Tambien reconoce variables de una sola letra
+    minuscula para permitir su reutilizacion
+    desde el compilador Simple.
 */
 int convertirPostfija(
     const char *expresion,
@@ -128,6 +132,28 @@ int convertirPostfija(
             (*cantidad)++;
 
             i += longitud;
+            esperaOperando = 0;
+        }
+
+        /* Lectura de variables de una sola letra minuscula */
+        else if (islower((unsigned char)expresion[i])) {
+
+            if (!esperaOperando) {
+                printf("Error: falta un operador antes de la variable.\n");
+                return 0;
+            }
+
+            if (*cantidad >= MAX_TOKENS) {
+                printf("Error: demasiados elementos.\n");
+                return 0;
+            }
+
+            salida[*cantidad][0] = expresion[i];
+            salida[*cantidad][1] = '\0';
+
+            (*cantidad)++;
+
+            i++;
             esperaOperando = 0;
         }
 
@@ -272,7 +298,6 @@ int convertirPostfija(
 
             return 0;
         }
-
     }
 
     /* Verificar que la expresion no termine con un operador */
@@ -431,6 +456,7 @@ int evaluarPostfija(
     return 1;
 }
 
+#ifndef EXPRESIONES_LIB
 /* Programa principal */
 int main(void) {
 
@@ -488,3 +514,4 @@ int main(void) {
 
     return 0;
 }
+#endif
