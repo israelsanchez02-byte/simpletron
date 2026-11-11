@@ -54,6 +54,22 @@ El compilador realiza dos pasadas:
 
 Las instrucciones `let` utilizan conversión de expresiones infijas a postfijas para generar las operaciones necesarias y almacenar resultados en posiciones temporales.
 
+### Tabla de símbolos
+
+El compilador utiliza una tabla de símbolos para almacenar y consultar los elementos identificados durante la compilación.
+
+Cada símbolo contiene su nombre, tipo, ubicación en memoria y valor asociado. Se manejan cuatro tipos:
+
+- **Línea:** almacena el número de línea del programa Simple y la dirección de la instrucción SML correspondiente.
+- **Variable:** registra las variables utilizadas y su ubicación en memoria.
+- **Constante:** almacena los valores constantes utilizados en las expresiones.
+- **Temporal:** registra las posiciones de memoria utilizadas para guardar resultados intermedios de las operaciones.
+
+Durante la primera pasada se registran los símbolos y se generan las instrucciones preliminares. En la segunda pasada se resuelven las referencias pendientes y se actualizan las ubicaciones definitivas de memoria.
+
+Al finalizar una compilación correcta, el compilador muestra la tabla de símbolos con las columnas de nombre, tipo, ubicación y valor.
+
+
 ## 5. Control de flujo
 
 El compilador transforma las instrucciones `goto` e `if` en instrucciones de salto de SML.
