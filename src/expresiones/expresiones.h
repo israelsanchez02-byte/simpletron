@@ -10,4 +10,10 @@ int convertirPostfija(
     int *cantidad
 );
 
+int evaluarPostfija(
+    char tokens[MAX_TOKENS][MAX_TOKEN_LENGTH],
+    int cantidad,
+    double *resultado
+);
+
 #endif
