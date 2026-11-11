@@ -56,7 +56,7 @@ Comandos disponibles:
 
 El lenguaje utiliza números de línea ascendentes, variables de una letra y constantes enteras.
 
-Operadores aritméticos: `+`, `-`, `*`, `/`, `^`.
+Operadores aritméticos: `+`, `-`, `*`, `/`, `%` y `^`. El compilador traduce `%` a la instrucción SML `MODULUS` (código 34).
 
 Operadores relacionales: `<`, `<=`, `>`, `>=`, `==`, `!=`.
 
@@ -93,7 +93,7 @@ Desde la carpeta principal del proyecto:
 ```bash
 gcc simpletron.c -o simpletron.exe -lm
 gcc src/expresiones/expresiones.c -o src/expresiones/evaluador.exe -lm
-gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o src/compilador/compilador.exe -lm
+gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o src/compilador/compilador.exe -lm\ngcc pruebas/expresiones/prueba_evaluador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o pruebas/expresiones/prueba_evaluador.exe -lm
 ```
 
 ## 4. Ejecución
@@ -104,7 +104,7 @@ gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB 
 ./src/expresiones/evaluador.exe
 ```
 
-El programa solicita una expresión y muestra su conversión a postfija y el resultado.
+El programa solicita una expresión y muestra su conversión a postfija y el resultado. Para ejecutar las pruebas automatizadas del evaluador:\n\n```bash\n./pruebas/expresiones/prueba_evaluador.exe\n```\n\nEl conjunto incluye precedencia, paréntesis, corchetes, llaves, potencias, módulo, decimales, signos unarios y detección de errores.
 
 ### Compilador de Simple
 
@@ -182,6 +182,26 @@ El programa demuestra la lectura de datos, asignación, multiplicación, evaluac
 
 
 
+### Prueba del operador modulo en el compilador
+
+Archivo de entrada: `programas/simple/prueba_modulo.simple`
+
+```text
+10 rem Prueba del operador modulo en Simple
+20 let a = 17 % 5
+30 print a
+40 end
+```
+
+Compilar y ejecutar:
+
+```bash
+./src/compilador/compilador.exe programas/simple/prueba_modulo.simple
+./simpletron.exe programas/sml/prueba_modulo.sml
+```
+
+La salida esperada del programa es `+2`.
+
 ## 5. Organización de carpetas
 
 ```text
@@ -215,7 +235,7 @@ simpletron/
 
 ## 6. Pruebas y evidencias
 
-El repositorio contiene programas de prueba para las operaciones aritméticas, lectura y escritura, cadenas, saltos, errores del simulador y evaluación de expresiones.
+El repositorio contiene programas de prueba para las operaciones aritméticas, lectura y escritura, cadenas, saltos, errores del simulador y evaluación de expresiones. Las pruebas automatizadas del evaluador se encuentran en `pruebas/expresiones/prueba_evaluador.c` e incluyen siete resultados numéricos esperados y cuatro casos de error. También se incluye un programa Simple para comprobar el operador módulo.
 
 También incluye programas Simple de ejemplo, sus archivos SML generados y pruebas de los seis operadores relacionales.
 
