@@ -2,6 +2,10 @@
 
 Proyecto desarrollado en lenguaje C que integra un simulador de la computadora Simpletron, un evaluador de expresiones aritméticas y un compilador de un lenguaje sencillo llamado Simple hacia SML.
 
+## Autor
+
+**Israel Sánchez Trejo**
+
 ## 1. Componentes del proyecto
 
 ### Simulador Simpletron
