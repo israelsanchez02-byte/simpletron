@@ -24,7 +24,7 @@ El programa también valida instrucciones, direcciones de memoria, división ent
 
 El evaluador utiliza el algoritmo Shunting Yard para convertir expresiones infijas a postfijas.
 
-Después utiliza una pila para evaluar el resultado, respetando la precedencia y asociatividad de los operadores. También valida los agrupadores, los operadores y los errores durante la evaluación.
+Después utiliza una pila para evaluar el resultado, respetando la precedencia y asociatividad de los operadores. También valida los agrupadores, los operadores y los errores durante la evaluación. El módulo expone `convertirPostfija()` y `evaluarPostfija()` en `expresiones.h`, para que puedan reutilizarse y probarse desde otros archivos. Las pruebas automatizadas cubren operaciones aritméticas, potencias asociativas por la derecha, módulo, decimales, signos unarios, agrupadores y errores.
 
 
 ### Integración con el compilador
@@ -52,7 +52,7 @@ El compilador realiza dos pasadas:
 - Completa las direcciones de memoria pendientes.
 - Genera el programa SML final.
 
-Las instrucciones `let` utilizan conversión de expresiones infijas a postfijas para generar las operaciones necesarias y almacenar resultados en posiciones temporales.
+Las instrucciones `let` utilizan conversión de expresiones infijas a postfijas para generar las operaciones necesarias y almacenar resultados en posiciones temporales. Los operadores `+`, `-`, `*`, `/`, `%` y `^` se traducen a sus instrucciones SML correspondientes; el operador `%` utiliza `MODULUS` (código 34).
 
 ### Tabla de símbolos
 
