@@ -1,0 +1,8 @@
+10 rem prueba del compilador
+20 input a
+30 let b = a * 2
+40 if b >= 10 goto 70
+50 print b
+60 goto 80
+70 print b + 1
+80 end

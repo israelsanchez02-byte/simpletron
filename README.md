@@ -1,205 +1,163 @@
-<<<<<<< HEAD
-# Simulador de Computadora Simpletron (SML)
+# Proyecto Simpletron: Simulador, Evaluador y Compilador
 
-Este repositorio contiene un simulador funcional de la computadora **Simpletron** y su lenguaje de programación **SML (Simpletron Machine Language)** hecho en lenguaje C. 
+Proyecto desarrollado en lenguaje C que integra un simulador de la computadora Simpletron, un evaluador de expresiones aritméticas y un compilador de un lenguaje sencillo llamado Simple hacia SML.
 
-El proyecto muestra la evolución del código desde la versión inicial básica hasta una versión con funciones extra agregadas.
+## 1. Componentes del proyecto
 
----
+### Simulador Simpletron
 
-## Características del Programa
+Archivo principal: `simpletron.c`
 
-### Versión Básica (v1.0)
-- **Memoria:** 100 espacios en memoria (`00` al `99`).
-- **Formato de datos:** Instrucciones de 4 dígitos (números entre `-9999` y `+9999`).
-- **Fin de carga:** Termina de pedir datos cuando metes el número `9999`.
-- **Registros:**
-  - `accumulator`: Guarda el resultado de las operaciones.
-  - `instructionCounter`: Indica en qué línea de memoria vamos.
-  - `instructionRegister`: Guarda la instrucción que se va a procesar.
-  - `operationCode`: Los primeros 2 dígitos que dicen qué hacer.
-  - `operand`: Los últimos 2 dígitos con la posición de memoria a usar.
+Implementa una computadora Simpletron con:
 
-### Versión Mejorada (v2.0)
-- **Más Memoria:** Se aumentó a 1000 espacios (`000` al `999`).
-- **Formato extendido:** Se usan 5 dígitos para aceptar las posiciones de 3 dígitos.
-- **Lectura desde archivo:** Lee automáticamente el archivo `programa.simp`. Si no existe, pide ingresar las instrucciones por teclado.
-- **Punto flotante:** Ya acepta y calcula números con decimales.
-- **Nuevas instrucciones:** Módulo/Residuo (`34`), Exponenciación (`35`), Salto de línea (`12`), Leer texto (`13`) y Mostrar texto (`14`).
+- Memoria de 1000 posiciones.
+- Registros del procesador.
+- Ciclo de búsqueda, decodificación y ejecución.
+- Lectura de programas SML desde archivos.
+- Operaciones aritméticas con números decimales.
+- Entrada y salida de números y cadenas.
+- Saltos condicionales e incondicionales.
+- Detección de errores fatales y desbordamientos.
+- Volcado completo de memoria al terminar la ejecución.
 
----
+### Evaluador de expresiones
 
-## Cómo Compilar y Ejecutar
+Archivo: `src/expresiones/expresiones.c`
 
-### Requisitos
-- Compilador de C estándar instalado (como `gcc`).
+Sus funciones principales son:
 
-### Compilacion
-Abre la consola en la carpeta del proyecto y corre:
+- Conversión de expresiones infijas a postfijas mediante Shunting Yard.
+- Evaluación de expresiones postfijas utilizando una pila.
+- Manejo de precedencia y asociatividad.
+- Soporte para números de varios dígitos y decimales.
+- Operadores `+`, `-`, `*`, `/`, `%` y `^`.
+- Validación de paréntesis, corchetes y llaves.
+- Detección de errores sintácticos y división entre cero.
 
-```bash
-gcc simpletron.c -o simpletron -lm
+### Lenguaje Simple y compilador
 
+Archivo: `src/compilador/compilador.c`
 
-Ejecucion
-En Windows:
+El compilador transforma programas escritos en Simple a instrucciones SML.
 
-simpletron.exe
+Comandos disponibles:
 
+- `rem`: comentario.
+- `input`: entrada de datos.
+- `let`: asignación y operaciones aritméticas.
+- `print`: mostrar resultados.
+- `goto`: salto a una línea.
+- `if`: condición con operador relacional y salto.
+- `end`: terminar el programa.
 
-SML
+El lenguaje utiliza números de línea ascendentes, variables de una letra y constantes enteras.
 
-Entrada y Salida
-10 READ: Pide un numero por teclado y lo guarda en la direccion elegida.
+Operadores aritméticos: `+`, `-`, `*`, `/`, `^`.
 
-11 WRITE: Muestra en pantalla el valor que hay en esa direccion.
+Operadores relacionales: `<`, `<=`, `>`, `>=`, `==`, `!=`.
 
-12 NEWLINE: Imprime un salto de linea.
+El compilador trabaja en dos pasadas: primero registra líneas, variables y referencias; después resuelve las direcciones pendientes y genera el archivo SML.
 
-13 READ_STR: Pide un texto por teclado y lo guarda en memoria.
+## 2. Instrucciones SML
 
-14 WRITE_STR: Muestra el texto guardado en memoria.
+| Código | Operación | Descripción |
+|---|---|---|
+| 10 | READ | Leer un número |
+| 11 | WRITE | Mostrar un número |
+| 12 | NEWLINE | Salto de línea |
+| 13 | READ_STR | Leer una cadena |
+| 14 | WRITE_STR | Mostrar una cadena |
+| 20 | LOAD | Cargar en el acumulador |
+| 21 | STORE | Guardar desde el acumulador |
+| 30 | ADD | Suma |
+| 31 | SUBTRACT | Resta |
+| 32 | DIVIDE | División |
+| 33 | MULTIPLY | Multiplicación |
+| 34 | MODULUS | Residuo |
+| 35 | EXPONENT | Exponenciación |
+| 40 | BRANCH | Salto incondicional |
+| 41 | BRANCHNEG | Salto si es negativo |
+| 42 | BRANCHZERO | Salto si es cero |
+| 43 | HALT | Terminar ejecución |
 
-Carga y Almacenamiento
-20 LOAD: Pasa el dato de la memoria al acumulador.
+## 3. Compilación
 
-21 STORE: Guarda el valor del acumulador en la memoria.
+Se requiere un compilador de C, por ejemplo GCC.
 
-Operaciones Matematicas
-30 ADD: Suma el valor de la memoria al acumulador.
-
-31 SUBTRACT: Resta el valor de memoria al acumulador.
-
-32 DIVIDE: Divide el acumulador entre el valor de la memoria.
-
-33 MULTIPLY: Multiplica el acumulador por el valor de memoria.
-
-34 MODULUS: Saca el residuo de la division.
-
-35 EXPONENT: Eleva el acumulador a la potencia elegida.
-
-Saltos y Control
-40 BRANCH: Salta directo a la linea de memoria seleccionada.
-
-41 BRANCHNEG: Salta solo si el acumulador es negativo.
-
-42 BRANCHZERO: Salta solo si el acumulador es igual a 0.
-
-43 HALT: Termina la ejecucion del programa.
-
-
-Errores Fatales y Vaciado de Memoria (Dump)
-El simulador detecta si algo sale mal mientras ejecuta el código y se detiene llamando a la función dumpMemory(). Detecta fallas como:
-
-Querer dividir entre cero (DIVIDE o MODULUS).
-
-Desbordamiento (si los números se salen del límite soportado).
-
-Usar un código de operación que no existe.
-
-Intentar leer posiciones fuera del límite de la memoria.
-
-Cuando el programa termina, se imprimen en pantalla los valores finales de todos los registros y la tabla con el contenido completo de la memoria.
-=======
-# Simulador de Computadora Simpletron (SML)
-
-Este repositorio contiene un simulador funcional de la computadora **Simpletron** y su lenguaje de programación **SML (Simpletron Machine Language)** hecho en lenguaje C. 
-
-El proyecto muestra la evolución del código desde la versión inicial básica hasta una versión con funciones extra agregadas.
-
----
-
-## Características del Programa
-
-### Versión Básica (v1.0)
-- **Memoria:** 100 espacios en memoria (`00` al `99`).
-- **Formato de datos:** Instrucciones de 4 dígitos (números entre `-9999` y `+9999`).
-- **Fin de carga:** Termina de pedir datos cuando metes el número `9999`.
-- **Registros:**
-  - `accumulator`: Guarda el resultado de las operaciones.
-  - `instructionCounter`: Indica en qué línea de memoria vamos.
-  - `instructionRegister`: Guarda la instrucción que se va a procesar.
-  - `operationCode`: Los primeros 2 dígitos que dicen qué hacer.
-  - `operand`: Los últimos 2 dígitos con la posición de memoria a usar.
-
-### Versión Mejorada (v2.0)
-- **Más Memoria:** Se aumentó a 1000 espacios (`000` al `999`).
-- **Formato extendido:** Se usan 5 dígitos para aceptar las posiciones de 3 dígitos.
-- **Lectura desde archivo:** Lee automáticamente el archivo `programa.simp`. Si no existe, pide ingresar las instrucciones por teclado.
-- **Punto flotante:** Ya acepta y calcula números con decimales.
-- **Nuevas instrucciones:** Módulo/Residuo (`34`), Exponenciación (`35`), Salto de línea (`12`), Leer texto (`13`) y Mostrar texto (`14`).
-
----
-
-## Cómo Compilar y Ejecutar
-
-### Requisitos
-- Compilador de C estándar instalado (como `gcc`).
-
-### Compilacion
-Abre la consola en la carpeta del proyecto y corre:
+Desde la carpeta principal del proyecto:
 
 ```bash
-gcc simpletron.c -o simpletron -lm
+gcc simpletron.c -o simpletron.exe -lm
+gcc src/expresiones/expresiones.c -o src/expresiones/evaluador.exe -lm
+gcc src/compilador/compilador.c -o src/compilador/compilador.exe
+```
 
+## 4. Ejecución
 
-Ejecucion
-En Windows:
+### Evaluador de expresiones
 
-simpletron.exe
+```bash
+./src/expresiones/evaluador.exe
+```
 
+El programa solicita una expresión y muestra su conversión a postfija y el resultado.
 
-SML
+### Compilador de Simple
 
-Entrada y Salida
-10 READ: Pide un numero por teclado y lo guarda en la direccion elegida.
+Ejemplo:
 
-11 WRITE: Muestra en pantalla el valor que hay en esa direccion.
+```bash
+./src/compilador/compilador.exe programas/simple/prueba_compilador.simple
+```
 
-12 NEWLINE: Imprime un salto de linea.
+El compilador genera el archivo correspondiente dentro de `programas/sml/`.
 
-13 READ_STR: Pide un texto por teclado y lo guarda en memoria.
+### Simulador Simpletron
 
-14 WRITE_STR: Muestra el texto guardado en memoria.
+Para ejecutar el SML generado:
 
-Carga y Almacenamiento
-20 LOAD: Pasa el dato de la memoria al acumulador.
+```bash
+./simpletron.exe programas/sml/prueba_compilador.sml
+```
 
-21 STORE: Guarda el valor del acumulador en la memoria.
+También se puede ejecutar otro programa cambiando la ruta del archivo SML.
 
-Operaciones Matematicas
-30 ADD: Suma el valor de la memoria al acumulador.
+## 5. Organización de carpetas
 
-31 SUBTRACT: Resta el valor de memoria al acumulador.
+```text
+simpletron/
+│
+├── simpletron.c
+├── README.md
+│
+├── src/
+│   ├── compilador/
+│   │   └── compilador.c
+│   └── expresiones/
+│       └── expresiones.c
+│
+├── programas/
+│   ├── simple/
+│   └── sml/
+│
+├── pruebas/
+│   ├── entradas/
+│   └── expresiones/
+│
+├── evidencias/
+│   ├── ejecuciones/
+│   └── git-branch/
+│
+└── docs/
+    └── diseno.md
+```
 
-32 DIVIDE: Divide el acumulador entre el valor de la memoria.
+## 6. Pruebas y evidencias
 
-33 MULTIPLY: Multiplica el acumulador por el valor de memoria.
+El repositorio contiene programas de prueba para las operaciones aritméticas, lectura y escritura, cadenas, saltos, errores del simulador y evaluación de expresiones.
 
-34 MODULUS: Saca el residuo de la division.
+También incluye programas Simple de ejemplo, sus archivos SML generados y pruebas de los seis operadores relacionales.
 
-35 EXPONENT: Eleva el acumulador a la potencia elegida.
+Las evidencias de ejecución se encuentran en `evidencias/ejecuciones/` y las evidencias de control de versiones en `evidencias/git-branch/`.
 
-Saltos y Control
-40 BRANCH: Salta directo a la linea de memoria seleccionada.
-
-41 BRANCHNEG: Salta solo si el acumulador es negativo.
-
-42 BRANCHZERO: Salta solo si el acumulador es igual a 0.
-
-43 HALT: Termina la ejecucion del programa.
-
-
-Errores Fatales y Vaciado de Memoria (Dump)
-El simulador detecta si algo sale mal mientras ejecuta el código y se detiene llamando a la función dumpMemory(). Detecta fallas como:
-
-Querer dividir entre cero (DIVIDE o MODULUS).
-
-Desbordamiento (si los números se salen del límite soportado).
-
-Usar un código de operación que no existe.
-
-Intentar leer posiciones fuera del límite de la memoria.
-
-Cuando el programa termina, se imprimen en pantalla los valores finales de todos los registros y la tabla con el contenido completo de la memoria.
->>>>>>> 68142c35f5631ede804e4b6eb4ae60c0b231d6cb
+La documentación de diseño se encuentra en `docs/diseno.md`.

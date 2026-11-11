@@ -1,0 +1,20 @@
+10 rem prueba de operadores relacionales
+20 let a = 5
+30 let b = (a + 3) * 2
+40 if a < 6 goto 60
+50 print 99
+60 if a <= 5 goto 80
+70 print 98
+80 if b > 15 goto 100
+90 print 97
+100 if b >= 16 goto 120
+110 print 96
+120 if b == 16 goto 140
+130 print 95
+140 if a != 4 goto 160
+150 print 94
+160 let c = 2 ^ 3
+170 let d = b - c
+180 let e = d / 2
+190 print e
+200 end
