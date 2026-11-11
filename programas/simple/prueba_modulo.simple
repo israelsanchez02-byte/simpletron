@@ -1,0 +1,4 @@
+10 rem Prueba del operador modulo en Simple
+20 let a = 17 % 5
+30 print a
+40 end
