@@ -93,7 +93,8 @@ Desde la carpeta principal del proyecto:
 ```bash
 gcc simpletron.c -o simpletron.exe -lm
 gcc src/expresiones/expresiones.c -o src/expresiones/evaluador.exe -lm
-gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o src/compilador/compilador.exe -lm\ngcc pruebas/expresiones/prueba_evaluador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o pruebas/expresiones/prueba_evaluador.exe -lm
+gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o src/compilador/compilador.exe -lm
+gcc pruebas/expresiones/prueba_evaluador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB -o pruebas/expresiones/prueba_evaluador.exe -lm
 ```
 
 ## 4. Ejecución
@@ -104,7 +105,13 @@ gcc src/compilador/compilador.c src/expresiones/expresiones.c -DEXPRESIONES_LIB 
 ./src/expresiones/evaluador.exe
 ```
 
-El programa solicita una expresión y muestra su conversión a postfija y el resultado. Para ejecutar las pruebas automatizadas del evaluador:\n\n```bash\n./pruebas/expresiones/prueba_evaluador.exe\n```\n\nEl conjunto incluye precedencia, paréntesis, corchetes, llaves, potencias, módulo, decimales, signos unarios y detección de errores.
+El programa solicita una expresión y muestra su conversión a postfija y el resultado. Para ejecutar las pruebas automatizadas del evaluador:
+
+```bash
+./pruebas/expresiones/prueba_evaluador.exe
+```
+
+El conjunto incluye precedencia, paréntesis, corchetes, llaves, potencias, módulo, decimales, signos unarios y detección de errores.
 
 ### Compilador de Simple
 
@@ -224,6 +231,8 @@ simpletron/
 ├── pruebas/
 │   ├── entradas/
 │   └── expresiones/
+│       ├── prueba_evaluador.c
+│       └── README.md
 │
 ├── evidencias/
 │   ├── ejecuciones/
